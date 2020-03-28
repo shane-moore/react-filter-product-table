@@ -1,0 +1,6 @@
+.header-container {
+  display: flex;
+  width: 130px;
+  justify-content: space-between;
+  margin-bottom: 3px;
+}

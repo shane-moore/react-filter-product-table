@@ -1,0 +1,4 @@
+.category {
+  grid-column: span 2;
+  font-weight: 600;
+}
