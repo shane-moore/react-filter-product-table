@@ -12,6 +12,8 @@ import './App.css';
 // when checked, change state to true
 // if true -> loop should not add ProductRow if inStock is false
 // Search component needs to filter out everything not matching search string -> lives in FilterableProductTable
+// update state of FilterableProductTable with value of the input field and then run includes method on loop over json file's product.name
+
 
 class ProductCategoryRow extends React.Component {
   render() {
@@ -54,9 +56,13 @@ class ProductTable extends React.Component {
     const rows = [];
     let lastCategory = null;
     const inStockOnly = this.props.inStockOnly;
+    const filteredText = this.props.filteredText;
 
     this.props.products.forEach((product) => {
       if (inStockOnly && !product.stocked) {
+        return;
+      }
+      if (!product.name.includes(filteredText)) {
         return;
       }
       if (product.category !== lastCategory) {
@@ -96,6 +102,14 @@ class SearchBar extends React.Component {
     super(props);
   }
 
+  handleInStockOnly = (e) => {
+    this.props.onInStockOnly(e.target.checked);
+  }
+
+  handleFilteredText = (e) => {
+    this.props.onFilteredText(e.target.value);
+  }
+
 
   render() {
 
@@ -103,9 +117,9 @@ class SearchBar extends React.Component {
 
     return (
       <form>
-        <input type="text" placeholder="Search..." />
+        <input type="text" placeholder="Search..." onChange={this.handleFilteredText} />
         <div>
-          <input type="checkbox" /> {' '}
+          <input type="checkbox" onChange={this.handleInStockOnly} /> {' '}
           <label>Only show products in stock</label>
         </div>
       </form>
@@ -118,15 +132,37 @@ class FilterableProductTable extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      inStockOnly: false
+      inStockOnly: false,
+      filteredText: ''
     }
   };
+
+  handleInStockOnly = (inStockOnly) => {
+    this.setState({
+      inStockOnly: inStockOnly
+    });
+  }
+
+  handleFilteredText = (filteredText) => {
+    this.setState({
+      filteredText: filteredText
+    });
+    console.log(this.state.filteredText)
+  }
 
   render() {
     return (
       <div>
-        <SearchBar inStockOnly={this.state.inStockOnly} />
-        <ProductTable products={PRODUCTS} inStockOnly={this.state.inStockOnly} />
+        <SearchBar inStockOnly={this.state.inStockOnly}
+          onInStockOnly={this.handleInStockOnly}
+          searchValue={this.state.filteredText}
+          onFilteredText={this.handleFilteredText}
+        />
+        <ProductTable
+          products={PRODUCTS}
+          inStockOnly={this.state.inStockOnly}
+          filteredText={this.state.filteredText}
+        />
       </div>
 
     )
